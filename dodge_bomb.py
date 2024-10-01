@@ -26,6 +26,15 @@ def check_bound(obj_rect:pg.Rect) -> tuple[bool,bool]:
         tate = False
     return yoko,tate
 
+def bomb_up():
+    up_img = []
+    saccs = [a for a in range(1, 11)]  
+    for r in range(1, 11):
+        bb_img = pg.Surface((20*r, 20*r),pg.SRCALPHA)  # 爆弾のサイズを拡大
+        pg.draw.circle(bb_img, (255,0,0), (10*r, 10*r), 10*r)  # 赤い円
+        up_img.append(bb_img)
+    return up_img, saccs
+
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
@@ -38,12 +47,14 @@ def main():
     ok_rct = ok_img.get_rect()
     ok_rct.center = (WIDTH,HEIGHT/3)
 
+    up_img, saccs = bomb_up()
 
     bb_img = pg.Surface((20,20))
     bb_img.set_colorkey((0,0,0))  # 透過
     pg.draw.circle(bb_img,(255,0,0),(10,10),10)
-    bb_rct = bb_img.get_rect()
+    bb_rct = up_img[0].get_rect()
     bb_rct.center = random.randint(0,WIDTH),random.randint(0,HEIGHT)
+    
 
     go = pg.Surface((WIDTH,HEIGHT))
     pg.draw.rect(go,(0,0,0),pg.Rect(0,0,WIDTH,HEIGHT))
@@ -72,17 +83,14 @@ def main():
             pg.time.wait(5000)
             return
         
+        idx = min(tmr // 500, 9)  # 10段階のリストに対応するインデックスを計算
+        bb_rct = up_img[idx].get_rect(center=bb_rct.center)  # 拡大した爆弾の新しいRect
+        avx = vx * saccs[idx]
+        avy = vy * saccs[idx]
+
+
         key_lst = pg.key.get_pressed()
         sum_mv = [0, 0]   # 横、縦座標
-        # if key_lst[pg.K_UP]:
-        #     sum_mv[1] -= 5
-        # if key_lst[pg.K_DOWN]:
-        #     sum_mv[1] += 5
-        # if key_lst[pg.K_LEFT]:
-        #     sum_mv[0] -= 5
-        # if key_lst[pg.K_RIGHT]:
-        #     sum_mv[0] += 5
-
         for key,tpl in DELTA.items():  
             if key_lst[key]:
                 sum_mv[0] += tpl[0]
@@ -93,13 +101,15 @@ def main():
             kk_rct.move_ip(-sum_mv[0], -sum_mv[1])
 
         screen.blit(kk_img, kk_rct)
-        bb_rct.move_ip(vx,vy)
+
+        bb_rct.move_ip(avx,avy)
         yoko,tate = check_bound(bb_rct)
         if not yoko:
             vx *= -1
         if not tate :
             vy *= -1
-        screen.blit(bb_img,bb_rct)
+
+        screen.blit(up_img[idx],bb_rct)
         pg.display.update()
         tmr += 1
         clock.tick(50)
