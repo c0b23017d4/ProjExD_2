@@ -13,6 +13,7 @@ DELTA = {pg.K_UP : (0,-5),  #　辞書を定義してまとめる
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
+
 def check_bound(obj_rect:pg.Rect) -> tuple[bool,bool]:  
     """
     引数はこうかとん、または爆弾のrect
@@ -26,6 +27,7 @@ def check_bound(obj_rect:pg.Rect) -> tuple[bool,bool]:
         tate = False
     return yoko,tate
 
+
 def bomb_up():
     up_img = []
     saccs = [a for a in range(1, 11)]  
@@ -34,6 +36,7 @@ def bomb_up():
         pg.draw.circle(bb_img, (255,0,0), (10*r, 10*r), 10*r)  # 赤い円
         up_img.append(bb_img)
     return up_img, saccs
+
 
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
