@@ -31,8 +31,13 @@ def main():
     screen = pg.display.set_mode((WIDTH, HEIGHT))
     bg_img = pg.image.load("fig/pg_bg.jpg")    
     kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 0.9)
+    ok_img = pg.transform.rotozoom(pg.image.load("fig/7.png"),0,0.9)
+
     kk_rct = kk_img.get_rect()
     kk_rct.center = 300, 200  # 初期座標
+    ok_rct = ok_img.get_rect()
+    ok_rct.center = (WIDTH,HEIGHT/3)
+
 
     bb_img = pg.Surface((20,20))
     bb_img.set_colorkey((0,0,0))  # 透過
@@ -40,8 +45,15 @@ def main():
     bb_rct = bb_img.get_rect()
     bb_rct.center = random.randint(0,WIDTH),random.randint(0,HEIGHT)
 
-    vx,vy = +5,+5  # 爆弾の速度
+    go = pg.Surface((WIDTH,HEIGHT))
+    pg.draw.rect(go,(0,0,0),pg.Rect(0,0,WIDTH,HEIGHT))
+    go.set_alpha(150)
+    go_rct = go.get_rect()
+  
 
+    vx,vy = +5,+5  # 爆弾の速度
+    
+    
     clock = pg.time.Clock()
     tmr = 0
     while True:
@@ -51,7 +63,13 @@ def main():
         screen.blit(bg_img, [0, 0])  # 貼り付ける
 
         if kk_rct.colliderect(bb_rct): # こうかとんと爆弾衝突したら
-            print("GameOver")
+            fonto = pg.font.Font(None,80)
+            txt = fonto.render("GameOver",True,(255,255,255))
+            screen.blit(go,go_rct)
+            screen.blit(txt,[400,300])
+            screen.blit(ok_img,[500,250])
+            pg.display.update()
+            pg.time.wait(5000)
             return
         
         key_lst = pg.key.get_pressed()
